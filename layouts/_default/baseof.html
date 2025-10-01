@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{{ "hugo-theme-console/css/terminal-0.7.4.min.css" | absURL }}">
     <link rel="stylesheet" href="{{ "hugo-theme-console/css/animate-4.1.1.min.css" | absURL }}">
     <link rel="stylesheet" href="{{ "hugo-theme-console/css/console.css" | absURL }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-papm6r+1Qw1Q6Qw1Q6Qw1Q6Qw1Q6Qw1Q6Qw1Q6Qw1Q6Qw1Q6Qw1Q6Qw1Q6Qw1Q6Qw1Q6Qw1Q6Qw1Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     {{- partial "custom-css.html" . -}}
     {{ `
       <!--[if lt IE 9]>
@@ -36,19 +37,21 @@
             <div class="logo terminal-prompt">
               {{ $url := replace .Permalink ( printf "%s" .Site.BaseURL) "" }}
               {{ $.Scratch.Add "path" .Site.BaseURL }}
-              <a href="{{ .Site.BaseURL }}" class="no-style {{ with .Site.Params.TitleCutting }}site-name{{ end }}">{{ .Site.Title }}</a>:~# 
+              <a href="{{ .Site.BaseURL }}" class="no-style site-link {{ with .Site.Params.TitleCutting }}site-name{{ end }}">🌻 {{ .Site.Title }}</a>:~# 
               {{ range $index, $element := split $url "/" }}{{ $.Scratch.Add "path" $element }}{{ if ne $element "" }}<a href='{{ $.Scratch.Get "path" | absURL }}'>{{ . }}</a>/{{ $.Scratch.Add "path" "/" }}{{ end }}{{ end }}</div></header>
           <nav class="terminal-menu">
             <ul vocab="https://schema.org/" typeof="BreadcrumbList">
+                {{ $current := .Page.RelPermalink }}
                 {{ range .Site.Params.navlinks }}
-                <li><a href="{{ absURL .url }}" typeof="ListItem">{{ .name }}</a></li>
+                {{ $isActive := or (eq $current (absURL .url | relURL)) (and (or (eq $current "/") (eq $current "/about/")) (or (eq .url "about/") (eq .url "/"))) }}
+                <li><a href="{{ absURL .url }}" typeof="ListItem" class="site-link{{ if $isActive }} active{{ end }}">{{ .name }}</a></li>
                 {{ end }}
             </ul>
           </nav>
         </div>
     </div>
 
-    <div class="container {{ .Site.Params.animateStyle }}" >
+    <div class="container">
         {{ block "main" . }}
         {{ end }}
         {{ partial "footer.html" . }}
